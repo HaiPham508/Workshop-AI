@@ -1,0 +1,1 @@
+ import React from 'react'; class TestCheck extends React.Component { render() { return <div style={{color: 'red'}}>test</div>; } } export default TestCheck;
