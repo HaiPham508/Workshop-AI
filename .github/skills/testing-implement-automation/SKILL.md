@@ -116,7 +116,7 @@ Regardless of approach, all output must follow the project POM structure and Sec
 2. Confirm the implementation approach (Section 6) before writing any code; ask the user when it is not provided.
 3. Load Playwright, assertion, and automation coding standards.
 4. Reuse existing page objects/components/fixtures/utilities before introducing new logic.
-5. Implement traceable tests with clear arrange-act-assert flow.
+5. Implement traceable tests using `test.step()` to wrap each Arrange, Act, and Assert phase — this makes every step visible in Playwright HTML Report and Trace Viewer.
 6. Align assertions with expected results only; avoid unsupported checks.
 7. Keep locators and page behavior encapsulated in page objects/components.
 8. Never modify source code of the system under test; write only automation assets (specs, page objects, components, fixtures, test data, automation config).
