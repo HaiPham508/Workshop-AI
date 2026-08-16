@@ -245,15 +245,46 @@ Each test must:
 - Be independent.
 - Be executable in isolation.
 - Validate one business scenario.
-- Have clear Arrange / Act / Assert flow.
+- Wrap each Arrange, Act, and Assert phase in `test.step()` — this makes every phase visible in Playwright HTML Report and Trace Viewer, and pinpoints which phase failed.
 
-Example:
+## Rules
+
+- Always `await` the `test.step()` call.
+- Step names must be descriptive: `'Arrange — <what is set up>'`, `'Act — <what action is taken>'`, `'Assert — <what is verified>'`.
+- When Arrange and Act are a single atomic operation (e.g. a `login()` helper), combine them: `'Arrange & Act — <description>'`.
+- Never put assertions inside the Arrange or Act step; keep them in the Assert step.
+
+## Example
 
 ```typescript
-test('User can login successfully', async ({ loginPage }) => {
-  await loginPage.navigate();
-  await loginPage.login(user, password);
-  await expect(loginPage.dashboard).toBeVisible();
+test('User can login successfully', async ({ page }) => {
+  await test.step('Arrange & Act — submit valid credentials', async () => {
+    await loginPage.login(user, password);
+  });
+
+  await test.step('Assert — redirected to dashboard', async () => {
+    await expect(page).toHaveURL('/dashboard');
+    await expect(loginPage.dashboard).toBeVisible();
+  });
+});
+```
+
+## Example — separate Arrange / Act
+
+```typescript
+test('Validation error shown when username is empty', async ({ page }) => {
+  await test.step('Arrange — fill password only, leave username empty', async () => {
+    await loginPage.fillPassword(password);
+  });
+
+  await test.step('Act — submit the form', async () => {
+    await loginPage.submit();
+  });
+
+  await test.step('Assert — username validation error shown', async () => {
+    await expect(loginPage.usernameError).toBeVisible();
+    await expect(page).toHaveURL('/login');
+  });
 });
 ```
 
