@@ -34,65 +34,77 @@ test.describe('Login Feature — TC-US-LOGIN-01', () => {
 
   // TC_LOGIN_001 — Verify user can log in with valid username and password
   test('TC_LOGIN_001 — user can log in with valid credentials', async ({ page }) => {
-    // Arrange & Act
-    await loginPage.login(TEST_DATA.validUser.username, TEST_DATA.validUser.password);
+    await test.step('Arrange & Act — submit valid credentials', async () => {
+      await loginPage.login(TEST_DATA.validUser.username, TEST_DATA.validUser.password);
+    });
 
-    // Assert — redirected to home and UI reflects authenticated state
-    await expect(page).toHaveURL('/');
-    await expect(page.getByText(`Xin chào, ${TEST_DATA.validUser.displayName}`)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Đăng xuất' })).toBeVisible();
+    await test.step('Assert — redirected to home and UI reflects authenticated state', async () => {
+      await expect(page).toHaveURL('/');
+      await expect(page.getByText(`Xin chào, ${TEST_DATA.validUser.displayName}`)).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Đăng xuất' })).toBeVisible();
+    });
   });
 
   // TC_LOGIN_003 — Verify error message is shown when password is incorrect
   test('TC_LOGIN_003 — error message shown when password is incorrect', async ({ page }) => {
-    // Arrange & Act
-    await loginPage.login(TEST_DATA.wrongPassword.username, TEST_DATA.wrongPassword.password);
+    await test.step('Arrange & Act — submit login with wrong password', async () => {
+      await loginPage.login(TEST_DATA.wrongPassword.username, TEST_DATA.wrongPassword.password);
+    });
 
-    // Assert — error shown, user stays on /login, username field retains value
-    await expect(loginPage.serverErrorAlert).toBeVisible();
-    await expect(loginPage.serverErrorAlert).toHaveText(ERROR_MESSAGES.invalidCredentials);
-    await expect(page).toHaveURL('/login');
-    await expect(loginPage.usernameInput).toHaveValue(TEST_DATA.wrongPassword.username);
+    await test.step('Assert — error shown, user stays on /login, username field retains value', async () => {
+      await expect(loginPage.serverErrorAlert).toBeVisible();
+      await expect(loginPage.serverErrorAlert).toHaveText(ERROR_MESSAGES.invalidCredentials);
+      await expect(page).toHaveURL('/login');
+      await expect(loginPage.usernameInput).toHaveValue(TEST_DATA.wrongPassword.username);
+    });
   });
 
   // TC_LOGIN_004 — Verify error message is shown when username does not exist
   test('TC_LOGIN_004 — error message shown when username does not exist', async ({ page }) => {
-    // Arrange & Act
-    await loginPage.login(TEST_DATA.nonexistentUser.username, TEST_DATA.nonexistentUser.password);
+    await test.step('Arrange & Act — submit login with non-existent username', async () => {
+      await loginPage.login(TEST_DATA.nonexistentUser.username, TEST_DATA.nonexistentUser.password);
+    });
 
-    // Assert — generic error shown (no user enumeration), user stays on /login
-    await expect(loginPage.serverErrorAlert).toBeVisible();
-    await expect(loginPage.serverErrorAlert).toHaveText(ERROR_MESSAGES.invalidCredentials);
-    await expect(page).toHaveURL('/login');
+    await test.step('Assert — generic error shown (no user enumeration), user stays on /login', async () => {
+      await expect(loginPage.serverErrorAlert).toBeVisible();
+      await expect(loginPage.serverErrorAlert).toHaveText(ERROR_MESSAGES.invalidCredentials);
+      await expect(page).toHaveURL('/login');
+    });
   });
 
   // TC_LOGIN_006 — Verify validation error when username field is empty
   test('TC_LOGIN_006 — validation error shown when username is empty', async ({ page }) => {
-    // Arrange — only fill password, leave username empty
-    await loginPage.fillPassword(TEST_DATA.validUser.password);
+    await test.step('Arrange — fill password only, leave username empty', async () => {
+      await loginPage.fillPassword(TEST_DATA.validUser.password);
+    });
 
-    // Act
-    await loginPage.submit();
+    await test.step('Act — submit the form', async () => {
+      await loginPage.submit();
+    });
 
-    // Assert — username validation error shown, no server error, form not submitted
-    await expect(loginPage.usernameError).toBeVisible();
-    await expect(loginPage.usernameError).toHaveText(ERROR_MESSAGES.usernameRequired);
-    await expect(loginPage.serverErrorAlert).not.toBeVisible();
-    await expect(page).toHaveURL('/login');
+    await test.step('Assert — username validation error shown, no server error, form not submitted', async () => {
+      await expect(loginPage.usernameError).toBeVisible();
+      await expect(loginPage.usernameError).toHaveText(ERROR_MESSAGES.usernameRequired);
+      await expect(loginPage.serverErrorAlert).not.toBeVisible();
+      await expect(page).toHaveURL('/login');
+    });
   });
 
   // TC_LOGIN_007 — Verify validation error when password field is empty
   test('TC_LOGIN_007 — validation error shown when password is empty', async ({ page }) => {
-    // Arrange — only fill username, leave password empty
-    await loginPage.fillUsername(TEST_DATA.validUser.username);
+    await test.step('Arrange — fill username only, leave password empty', async () => {
+      await loginPage.fillUsername(TEST_DATA.validUser.username);
+    });
 
-    // Act
-    await loginPage.submit();
+    await test.step('Act — submit the form', async () => {
+      await loginPage.submit();
+    });
 
-    // Assert — password validation error shown, no server error, form not submitted
-    await expect(loginPage.passwordError).toBeVisible();
-    await expect(loginPage.passwordError).toHaveText(ERROR_MESSAGES.passwordRequired);
-    await expect(loginPage.serverErrorAlert).not.toBeVisible();
-    await expect(page).toHaveURL('/login');
+    await test.step('Assert — password validation error shown, no server error, form not submitted', async () => {
+      await expect(loginPage.passwordError).toBeVisible();
+      await expect(loginPage.passwordError).toHaveText(ERROR_MESSAGES.passwordRequired);
+      await expect(loginPage.serverErrorAlert).not.toBeVisible();
+      await expect(page).toHaveURL('/login');
+    });
   });
 });
